@@ -10,7 +10,7 @@ A Node.js server that processes images via the Ideogram API and saves them to Cl
 - MongoDB for persistence of job status
 - Cloudinary integration for image storage
 
-## Prerequisites
+## I am using
 
 - Node.js 18 or higher
 - MongoDB
@@ -34,28 +34,7 @@ CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 NODE_ENV=development
 ```
 
-## Installation
 
-1. Clone the repository
-2. Install dependencies:
-   ```
-   npm install
-   ```
-3. Build the project:
-   ```
-   npm run build
-   ```
-4. Start the server:
-   ```
-   npm start
-   ```
-
-For development:
-```
-npm run dev
-```
-
-## API Endpoints
 
 ### Generate Image
 - **URL**: `/api/ideogram/generate`
