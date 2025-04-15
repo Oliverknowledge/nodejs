@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+npm-debug.log
+.DS_Store
+logs/
+*.log
+coverage/
+.idea/
+.vscode/
+tmp/
+temp/ 

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ideogram API Client</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .image-container {
+      max-width: 500px;
+      margin: 20px auto;
+    }
+    .image-container img {
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .status-badge {
+      font-size: 0.9rem;
+      padding: 5px 10px;
+    }
+    .job-card {
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+    .job-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <h1 class="text-center mb-4">Ideogram API Client</h1>
+    
+    <ul class="nav nav-tabs mb-4" id="ideogramTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="generate-tab" data-bs-toggle="tab" data-bs-target="#generate" type="button" role="tab" aria-controls="generate" aria-selected="true">Generate</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="reframe-tab" data-bs-toggle="tab" data-bs-target="#reframe" type="button" role="tab" aria-controls="reframe" aria-selected="false">Reframe</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="remix-tab" data-bs-toggle="tab" data-bs-target="#remix" type="button" role="tab" aria-controls="remix" aria-selected="false">Remix</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="jobs-tab" data-bs-toggle="tab" data-bs-target="#jobs" type="button" role="tab" aria-controls="jobs" aria-selected="false">Jobs</button>
+      </li>
+    </ul>
+    
+    <div class="tab-content" id="ideogramTabContent">
+      <!-- Generate Tab -->
+      <div class="tab-pane fade show active" id="generate" role="tabpanel" aria-labelledby="generate-tab">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Generate Image</h5>
+                <form id="generateForm">
+                  <div class="mb-3">
+                    <label for="prompt" class="form-label">Prompt</label>
+                    <textarea class="form-control" id="prompt" rows="3" required></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label for="style" class="form-label">Style</label>
+                    <select class="form-select" id="style">
+                      <option value="imagine" selected>Imagine</option>
+                      <option value="photo">Photo</option>
+                      <option value="anime">Anime</option>
+                      <option value="painting">Painting</option>
+                      <option value="cartoon">Cartoon</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="aspect_ratio" class="form-label">Aspect Ratio</label>
+                    <select class="form-select" id="aspect_ratio">
+                      <option value="1:1" selected>1:1 (Square)</option>
+                      <option value="16:9">16:9 (Landscape)</option>
+                      <option value="9:16">9:16 (Portrait)</option>
+                      <option value="4:3">4:3</option>
+                      <option value="3:4">3:4</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="seed" class="form-label">Seed (Optional)</label>
+                    <input type="number" class="form-control" id="seed">
+                  </div>
+                  <button type="submit" class="btn btn-primary">Generate</button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">Generated Image</h5>
+                <div id="generateStatus" class="alert alert-info">No image generated yet</div>
+                <div id="generateImage" class="image-container"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Reframe Tab -->
+      <div class="tab-pane fade" id="reframe" role="tabpanel" aria-labelledby="reframe-tab">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Reframe Image</h5>
+                <form id="reframeForm">
+                  <div class="mb-3">
+                    <label for="reframe_generation_id" class="form-label">Generation ID</label>
+                    <input type="text" class="form-control" id="reframe_generation_id" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="reframe_aspect_ratio" class="form-label">Aspect Ratio</label>
+                    <select class="form-select" id="reframe_aspect_ratio">
+                      <option value="1:1">1:1 (Square)</option>
+                      <option value="16:9" selected>16:9 (Landscape)</option>
+                      <option value="9:16">9:16 (Portrait)</option>
+                      <option value="4:3">4:3</option>
+                      <option value="3:4">3:4</option>
+                    </select>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Reframe</button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">Reframed Image</h5>
+                <div id="reframeStatus" class="alert alert-info">No image reframed yet</div>
+                <div id="reframeImage" class="image-container"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Remix Tab -->
+      <div class="tab-pane fade" id="remix" role="tabpanel" aria-labelledby="remix-tab">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Remix Image</h5>
+                <form id="remixForm">
+                  <div class="mb-3">
+                    <label for="remix_generation_id" class="form-label">Generation ID</label>
+                    <input type="text" class="form-control" id="remix_generation_id" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="remix_prompt" class="form-label">Prompt</label>
+                    <textarea class="form-control" id="remix_prompt" rows="3" required></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label for="remix_style" class="form-label">Style</label>
+                    <select class="form-select" id="remix_style">
+                      <option value="imagine" selected>Imagine</option>
+                      <option value="photo">Photo</option>
+                      <option value="anime">Anime</option>
+                      <option value="painting">Painting</option>
+                      <option value="cartoon">Cartoon</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="remix_aspect_ratio" class="form-label">Aspect Ratio</label>
+                    <select class="form-select" id="remix_aspect_ratio">
+                      <option value="1:1" selected>1:1 (Square)</option>
+                      <option value="16:9">16:9 (Landscape)</option>
+                      <option value="9:16">9:16 (Portrait)</option>
+                      <option value="4:3">4:3</option>
+                      <option value="3:4">3:4</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="remix_seed" class="form-label">Seed (Optional)</label>
+                    <input type="number" class="form-control" id="remix_seed">
+                  </div>
+                  <button type="submit" class="btn btn-primary">Remix</button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">Remixed Image</h5>
+                <div id="remixStatus" class="alert alert-info">No image remixed yet</div>
+                <div id="remixImage" class="image-container"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Jobs Tab -->
+      <div class="tab-pane fade" id="jobs" role="tabpanel" aria-labelledby="jobs-tab">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Job History</h5>
+            <button id="refreshJobs" class="btn btn-sm btn-primary mb-3">Refresh</button>
+            <div id="jobsList" class="row">
+              <div class="col-12">
+                <div class="alert alert-info">No jobs found</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script>
+    // API configuration
+    const API_BASE_URL = '/api/ideogram';
+    let socket;
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      // Connect to socket
+      socket = io();
+      
+      // Set up form event listeners
+      document.getElementById('generateForm').addEventListener('submit', handleGenerateSubmit);
+      document.getElementById('reframeForm').addEventListener('submit', handleReframeSubmit);
+      document.getElementById('remixForm').addEventListener('submit', handleRemixSubmit);
+      document.getElementById('refreshJobs').addEventListener('click', loadJobs);
+      
+      // Load jobs initially
+      loadJobs();
+    });
+    
+    // Handle Generate Form Submit
+    async function handleGenerateSubmit(e) {
+      e.preventDefault();
+      
+      const prompt = document.getElementById('prompt').value;
+      const style = document.getElementById('style').value;
+      const aspect_ratio = document.getElementById('aspect_ratio').value;
+      const seed = document.getElementById('seed').value || undefined;
+      
+      document.getElementById('generateStatus').className = 'alert alert-info';
+      document.getElementById('generateStatus').textContent = 'Submitting generate request...';
+      
+      try {
+        const response = await fetch(`${API_BASE_URL}/generate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ prompt, style, aspect_ratio, seed }),
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          document.getElementById('generateStatus').className = 'alert alert-success';
+          document.getElementById('generateStatus').textContent = `Job queued successfully. Job ID: ${data.jobId}`;
+          
+          // Subscribe to job updates
+          subscribeToJob(data.jobId, 'generate');
+        } else {
+          document.getElementById('generateStatus').className = 'alert alert-danger';
+          document.getElementById('generateStatus').textContent = `Error: ${data.message}`;
+        }
+      } catch (error) {
+        document.getElementById('generateStatus').className = 'alert alert-danger';
+        document.getElementById('generateStatus').textContent = `Error: ${error.message}`;
+      }
+    }
+    
+    // Handle Reframe Form Submit
+    async function handleReframeSubmit(e) {
+      e.preventDefault();
+      
+      const generation_id = document.getElementById('reframe_generation_id').value;
+      const aspect_ratio = document.getElementById('reframe_aspect_ratio').value;
+      
+      document.getElementById('reframeStatus').className = 'alert alert-info';
+      document.getElementById('reframeStatus').textContent = 'Submitting reframe request...';
+      
+      try {
+        const response = await fetch(`${API_BASE_URL}/reframe`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ generation_id, aspect_ratio }),
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          document.getElementById('reframeStatus').className = 'alert alert-success';
+          document.getElementById('reframeStatus').textContent = `Job queued successfully. Job ID: ${data.jobId}`;
+          
+          // Subscribe to job updates
+          subscribeToJob(data.jobId, 'reframe');
+        } else {
+          document.getElementById('reframeStatus').className = 'alert alert-danger';
+          document.getElementById('reframeStatus').textContent = `Error: ${data.message}`;
+        }
+      } catch (error) {
+        document.getElementById('reframeStatus').className = 'alert alert-danger';
+        document.getElementById('reframeStatus').textContent = `Error: ${error.message}`;
+      }
+    }
+    
+    // Handle Remix Form Submit
+    async function handleRemixSubmit(e) {
+      e.preventDefault();
+      
+      const generation_id = document.getElementById('remix_generation_id').value;
+      const prompt = document.getElementById('remix_prompt').value;
+      const style = document.getElementById('remix_style').value;
+      const aspect_ratio = document.getElementById('remix_aspect_ratio').value;
+      const seed = document.getElementById('remix_seed').value || undefined;
+      
+      document.getElementById('remixStatus').className = 'alert alert-info';
+      document.getElementById('remixStatus').textContent = 'Submitting remix request...';
+      
+      try {
+        const response = await fetch(`${API_BASE_URL}/remix`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ generation_id, prompt, style, aspect_ratio, seed }),
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          document.getElementById('remixStatus').className = 'alert alert-success';
+          document.getElementById('remixStatus').textContent = `Job queued successfully. Job ID: ${data.jobId}`;
+          
+          // Subscribe to job updates
+          subscribeToJob(data.jobId, 'remix');
+        } else {
+          document.getElementById('remixStatus').className = 'alert alert-danger';
+          document.getElementById('remixStatus').textContent = `Error: ${data.message}`;
+        }
+      } catch (error) {
+        document.getElementById('remixStatus').className = 'alert alert-danger';
+        document.getElementById('remixStatus').textContent = `Error: ${error.message}`;
+      }
+    }
+    
+    // Subscribe to job updates
+    function subscribeToJob(jobId, jobType) {
+      socket.emit('subscribe', jobId);
+      
+      socket.on('job-update', (data) => {
+        if (data.jobId === jobId) {
+          updateJobStatus(data, jobType);
+        }
+      });
+    }
+    
+    // Update job status
+    function updateJobStatus(data, jobType) {
+      const statusElement = document.getElementById(`${jobType}Status`);
+      const imageElement = document.getElementById(`${jobType}Image`);
+      
+      if (data.status === 'processing') {
+        statusElement.className = 'alert alert-primary';
+        statusElement.textContent = 'Processing...';
+      } else if (data.status === 'completed') {
+        statusElement.className = 'alert alert-success';
+        statusElement.textContent = 'Image generated successfully!';
+        
+        if (data.result && data.result.cloudinaryUrl) {
+          imageElement.innerHTML = `<img src="${data.result.cloudinaryUrl}" alt="${jobType} image">`;
+          
+          // If this is a generate job, save the generation_id
+          if (jobType === 'generate' && data.result.generation_id) {
+            document.getElementById('reframe_generation_id').value = data.result.generation_id;
+            document.getElementById('remix_generation_id').value = data.result.generation_id;
+          }
+        }
+      } else if (data.status === 'failed') {
+        statusElement.className = 'alert alert-danger';
+        statusElement.textContent = `Failed: ${data.error || 'Unknown error'}`;
+      }
+      
+      // Refresh jobs list
+      loadJobs();
+    }
+    
+    // Load jobs from the API
+    async function loadJobs() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/jobs`);
+        const data = await response.json();
+        
+        if (data.success && data.jobs.length > 0) {
+          displayJobs(data.jobs);
+        } else {
+          document.getElementById('jobsList').innerHTML = '<div class="col-12"><div class="alert alert-info">No jobs found</div></div>';
+        }
+      } catch (error) {
+        document.getElementById('jobsList').innerHTML = `<div class="col-12"><div class="alert alert-danger">Error loading jobs: ${error.message}</div></div>`;
+      }
+    }
+    
+    // Display jobs in the jobs tab
+    function displayJobs(jobs) {
+      const jobsList = document.getElementById('jobsList');
+      jobsList.innerHTML = '';
+      
+      jobs.forEach(job => {
+        const statusClass = getStatusClass(job.status);
+        const result = job.result || {};
+        
+        const jobCard = document.createElement('div');
+        jobCard.className = 'col-md-6 col-lg-4 mb-3';
+        jobCard.innerHTML = `
+          <div class="card job-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span>Job ID: ${job.id.substring(0, 8)}...</span>
+              <span class="badge ${statusClass} status-badge">${job.status}</span>
+            </div>
+            <div class="card-body">
+              <h6 class="card-subtitle mb-2 text-muted">Type: ${job.type}</h6>
+              <p class="card-text">Created: ${new Date(job.createdAt).toLocaleString()}</p>
+              ${result.cloudinaryUrl ? `<div class="image-container mb-2"><img src="${result.cloudinaryUrl}" alt="Job result"></div>` : ''}
+              ${job.error ? `<div class="alert alert-danger">${job.error}</div>` : ''}
+            </div>
+          </div>
+        `;
+        
+        jobsList.appendChild(jobCard);
+      });
+    }
+    
+    // Get the appropriate status class for Bootstrap
+    function getStatusClass(status) {
+      switch (status) {
+        case 'pending':
+          return 'bg-warning';
+        case 'processing':
+          return 'bg-primary';
+        case 'completed':
+          return 'bg-success';
+        case 'failed':
+          return 'bg-danger';
+        default:
+          return 'bg-secondary';
+      }
+    }
+  </script>
+</body>
+</html> 
